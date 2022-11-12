@@ -8,6 +8,11 @@ readme = "README.md"
 repository = "https://github.com/Kristories/statuses.rs"
 documentation = "https://docs.rs/statuses"
 description = "HTTP status utility for Rust"
+include = [
+  "src/**/*",
+  "Cargo.toml",
+  "codes.json"
+]
 
 [dependencies]
 gjson = "0.8"
