@@ -2,6 +2,12 @@
 name = "statuses"
 version = "0.1.0"
 edition = "2021"
+authors = ["Wahyu Kristianto <w.kristories@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+repository = "https://github.com/Kristories/statuses.rs"
+documentation = "https://docs.rs/statuses"
+description = "HTTP status utility for Rust"
 
 [dependencies]
 gjson = "0.8"
