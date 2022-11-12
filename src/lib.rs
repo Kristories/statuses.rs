@@ -1,7 +1,7 @@
 use gjson;
 
 fn parse(search: &str) -> String {
-    let json = std::fs::read_to_string("./codes.json").unwrap();
+    let json = std::fs::read_to_string("codes.json").unwrap();
     let binding = gjson::get(&json, &search);
 
     if !binding.exists() {
