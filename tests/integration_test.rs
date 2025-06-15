@@ -1,5 +1,5 @@
-use statuses::{code, message};
 use serde::Deserialize;
+use statuses::{code, message};
 use std::fs;
 
 #[derive(Debug, Deserialize)]
@@ -17,10 +17,18 @@ fn test_all_status_codes() {
     for status in codes {
         // Test code -> message
         let result_message = message(&status.code).unwrap();
-        assert_eq!(result_message, status.message, "Failed on code: {}", status.code);
+        assert_eq!(
+            result_message, status.message,
+            "Failed on code: {}",
+            status.code
+        );
 
         // Test message -> code
         let result_code = code(&status.message).unwrap();
-        assert_eq!(result_code, status.code, "Failed on message: {}", status.message);
+        assert_eq!(
+            result_code, status.code,
+            "Failed on message: {}",
+            status.message
+        );
     }
 }
