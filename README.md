@@ -1,35 +1,48 @@
-# Satuses
+# statuses
 
-HTTP status utility for Rust.
+[![Crates.io](https://img.shields.io/crates/v/statuses.svg)](https://crates.io/crates/statuses)
+[![Documentation](https://docs.rs/statuses/badge.svg)](https://docs.rs/statuses)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-## Cargo
+> HTTP status code utility for Rust — simple and lightweight mapping between HTTP status codes and their standard messages.
 
-Put this in your Cargo.toml:
+---
 
-```yaml
+## Installation
+
+Add `statuses` to your `Cargo.toml`:
+
+```toml
 [dependencies]
-statuses = "0.1"
+statuses = "0.2"
 ```
 
 ## Usage
 
-### `message(code)`
-
-Returns the status message string for a known HTTP status code.
+Get message from status code:
 
 ```rust
-fn main() {
-    // Unprocessable Entity
-    println!("{}", statuses::message("422"));
+use statuses::message;
+
+fn main() -> Result<(), statuses::StatusError> {
+    let msg = message("422")?;
+    println!("{}", msg); // Output: Unprocessable Entity
+    Ok(())
 }
 ```
 
-### `code(message)`
-
-Returns the status code string for a known HTTP status message.
+Get code from status message:
 
 ```rust
-fn main() {
-    // 403
-    println!("{}", statuses::code("Forbidden"));
+use statuses::code;
+
+fn main() -> Result<(), statuses::StatusError> {
+    let code = code("Forbidden")?;
+    println!("{}", code); // Output: 403
+    Ok(())
 }
+```
+
+## License
+
+This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
