@@ -8,8 +8,6 @@ use thiserror::Error;
 pub enum StatusError {
     #[error("Status code or message does not exist")]
     NotFound,
-    #[error("Failed to read status codes file: {0}")]
-    FileError(#[from] std::io::Error),
     #[error("Failed to parse JSON data: {0}")]
     JsonError(#[from] serde_json::Error),
 }
@@ -21,11 +19,14 @@ pub struct Status {
     pub message: String,
 }
 
+type StatusMap = HashMap<String, String>;
+type StatusMaps = (StatusMap, StatusMap);
+
 /// Global cache for code-to-message lookups
-static CODE_TO_MESSAGE: OnceLock<HashMap<String, String>> = OnceLock::new();
+static CODE_TO_MESSAGE: OnceLock<StatusMap> = OnceLock::new();
 
 /// Global cache for message-to-code lookups  
-static MESSAGE_TO_CODE: OnceLock<HashMap<String, String>> = OnceLock::new();
+static MESSAGE_TO_CODE: OnceLock<StatusMap> = OnceLock::new();
 
 /// Normalizes input strings for consistent key matching
 /// Converts to lowercase and trims whitespace
@@ -41,15 +42,16 @@ fn normalize_key(s: &str) -> String {
 ///
 /// # Errors
 ///
-/// Returns `StatusError` if file reading or JSON parsing fails
-fn load_status_maps() -> Result<(HashMap<String, String>, HashMap<String, String>), StatusError> {
-    // Read the JSON configuration file
-    let json_content = std::fs::read_to_string("codes.json")?;
-    let statuses: Vec<Status> = serde_json::from_str(&json_content)?;
+/// Returns `StatusError` if embedded JSON parsing fails
+fn load_status_maps() -> Result<StatusMaps, StatusError> {
+    // Embed `codes.json` at compile time so the crate does not depend on
+    // the caller's working directory at runtime.
+    let json_content = include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/codes.json"));
+    let statuses: Vec<Status> = serde_json::from_str(json_content)?;
 
     // Build bidirectional lookup maps
-    let mut code_to_message = HashMap::with_capacity(statuses.len());
-    let mut message_to_code = HashMap::with_capacity(statuses.len());
+    let mut code_to_message = StatusMap::with_capacity(statuses.len());
+    let mut message_to_code = StatusMap::with_capacity(statuses.len());
 
     for status in statuses {
         let normalized_code = normalize_key(&status.code);
@@ -57,14 +59,6 @@ fn load_status_maps() -> Result<(HashMap<String, String>, HashMap<String, String
 
         code_to_message.insert(normalized_code, status.message.clone());
         message_to_code.insert(normalized_message, status.code.clone());
-    }
-
-    // Debug output for development (consider using log crate in production)
-    #[cfg(debug_assertions)]
-    {
-        println!("Loaded {} status codes", code_to_message.len());
-        println!("Code-to-message cache: {:?}", code_to_message);
-        println!("Message-to-code cache: {:?}", message_to_code);
     }
 
     Ok((code_to_message, message_to_code))
