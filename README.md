@@ -14,7 +14,7 @@ Add `statuses` to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-statuses = "0.2"
+statuses = "0.3"
 ```
 
 ## Usage
