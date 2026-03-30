@@ -8,4 +8,9 @@ jobs:
     name: Testing
     steps:
       - uses: actions/checkout@v4
-      - uses: Kristories/cargo-test@v1.0.0
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: stable
+      - uses: Swatinem/rust-cache@v2
+      - name: Test local rust
+        uses: Kristories/cargo-test@v1.0.0
